@@ -5,9 +5,12 @@ const config: CodegenConfig = {
   generates: {
     './src/schema/types.ts': {
       plugins: ['typescript', 'typescript-resolvers'],
+      config: {
+        contextType: '../server#MyContext',
+      },
     },
   },
 };
 
 export default config;
-    
+

@@ -1,8 +1,69 @@
-type Book {
-  title: String!
-  author: String!
+DIRECTIVES
+type Query {
+  # User queries
+  me: User
+
+  # Room queries
+  rooms: [RoomWithoutMessages!]
+  room(id: ID!): Room!
+  messages(roomId: ID!): [Message!]
 }
 
-type Query {
-  books: [Book]!
+type RoomWithoutMessages {
+  id: ID!
+  name: String!
+}
+
+type Mutation {
+  # Authentication
+  signUp(input: InputUser!): AuthPayload!
+  Login(email: String!, password: String!): AuthPayload!
+
+  # Profile management
+  updateUser(input: InputUser!): User!
+  deleteUser: User!
+
+  # Room management
+  createRoom(name: String!): Room!
+  joinRoom(id: ID!): Room!
+
+  # Message management
+  sendMessage(roomId: ID!, text: String!): Message!
+}
+
+type Subscription {
+  messageSent(roomId: ID!): Message!
+}
+
+input InputUser {
+  name: String
+  email: String
+  password: String
+}
+
+type AuthPayload {
+  token: String
+  user: User
+}
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  password: String!
+}
+
+type Room {
+  id: ID!
+  name: String!
+  messages: [Message!]
+}
+
+type Message {
+  id: ID!
+  text: String!
+  user: User!
+  room: Room!
+
+  createdAt: String!
 }

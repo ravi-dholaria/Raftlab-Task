@@ -1,4 +1,4 @@
-import { ApolloServer } from '@apollo/server';
+import { ApolloServer, BaseContext } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import express from 'express';
@@ -6,14 +6,18 @@ import http from 'http';
 import cors from 'cors';
 import resolvers from './schema/resolvers';
 import typeDefs from './schema/typeDefs';
+import connectDB from './db';
+import models, { Imodels } from './models/index';
 
-interface MyContext {
-  token?: string;
+export interface MyContext {
+  models: Imodels;
+  userId?: string;
 }
 
 const app = express();
 
 const httpServer = http.createServer(app);
+connectDB();
 
 const server = new ApolloServer<MyContext>({
   typeDefs,
@@ -31,11 +35,14 @@ void (async () => {
 
     expressMiddleware(server, {
       // eslint-disable-next-line @typescript-eslint/require-await
-      context: async ({ req }) => ({ token: req.headers.token }),
+      context: async ({ req }) => ({
+        models,
+        userId: req.headers?.authorization || undefined,
+      }),
     }),
   );
 
   // Modified server startup
   await new Promise<void>((resolve) => httpServer.listen({ port: 4000 }, resolve));
-  console.log(`  Server ready at http://localhost:4000/`);
+  console.log(`🚀 Server ready at http://localhost:4000/`);
 })();
