@@ -1,11 +1,6 @@
-import { MutationResolvers, User } from '../types';
+import { MutationResolvers, User } from '../../schema/types';
 import { GraphQLError } from 'graphql';
-import {
-  isString,
-  validateEmail,
-  validateInputUser,
-  validateUpdateUser,
-} from '../resolvers/validation';
+import { isString, validateEmail, validateInputUser, validateUpdateUser } from '../helper/validation';
 import { compare, hash } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import config from '../../config';

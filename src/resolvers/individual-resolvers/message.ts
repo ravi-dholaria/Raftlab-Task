@@ -1,5 +1,5 @@
 import { GraphQLError } from 'graphql';
-import { MessageResolvers, RoomDbObject, UserDbObject } from '../types';
+import { MessageResolvers, RoomDbObject, UserDbObject } from '../../schema/types';
 
 const Message: MessageResolvers = {
   room: async (parent, args, context) => {

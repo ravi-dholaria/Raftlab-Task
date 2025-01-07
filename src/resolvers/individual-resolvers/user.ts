@@ -1,4 +1,4 @@
-import { UserResolvers } from '../types';
+import { UserResolvers } from '../../schema/types';
 
 const User: UserResolvers = {};
 

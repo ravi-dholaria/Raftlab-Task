@@ -1,4 +1,4 @@
-import { RoomDbObject, RoomResolvers } from '../types';
+import { RoomDbObject, RoomResolvers } from '../../schema/types';
 import { ObjectId } from 'mongodb';
 
 const Room: RoomResolvers = {

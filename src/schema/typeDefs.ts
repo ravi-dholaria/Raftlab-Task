@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
 import { DIRECTIVES } from '@graphql-codegen/typescript-mongodb';
-import resolvers from './resolvers';
+import resolvers from '../resolvers';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { gql } from 'graphql-tag';
 // Combine DIRECTIVES with your schema

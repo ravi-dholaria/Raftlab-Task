@@ -1,5 +1,5 @@
 import { GraphQLError } from 'graphql';
-import { QueryResolvers, RoomDbObject, UserDbObject } from '../types';
+import { QueryResolvers, RoomDbObject, UserDbObject } from '../../schema/types';
 
 const Query: QueryResolvers = {
   me: async (parent, args, context) => {

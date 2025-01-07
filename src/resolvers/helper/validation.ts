@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql';
 import { isObjectIdOrHexString } from 'mongoose';
-import { InputUser, Maybe } from '../types';
+import { InputUser, Maybe } from '../../schema/types';
 
 export const validatePassword = (password: string): void => {
   if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password)) {
