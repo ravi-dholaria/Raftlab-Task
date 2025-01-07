@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { GraphQLError } from 'graphql';
 import { isObjectIdOrHexString } from 'mongoose';
 import { InputUser, Maybe } from '../types';

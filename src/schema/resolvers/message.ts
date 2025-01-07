@@ -2,7 +2,6 @@ import { GraphQLError } from 'graphql';
 import { MessageResolvers, RoomDbObject, UserDbObject } from '../types';
 
 const Message: MessageResolvers = {
-  
   room: async (parent, args, context) => {
     const room: RoomDbObject | null = await context.models.room.findById(parent.room).lean();
     if (!room) {
