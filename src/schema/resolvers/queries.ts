@@ -1,7 +1,5 @@
 import { GraphQLError } from 'graphql';
-import { Message, QueryResolvers, RoomDbObject, UserDbObject } from '../types';
-import { Document, PopulatedDoc } from 'mongoose';
-import Room from './room';
+import { QueryResolvers, RoomDbObject, UserDbObject } from '../types';
 
 const Query: QueryResolvers = {
   me: async (parent, args, context) => {

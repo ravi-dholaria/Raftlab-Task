@@ -1,17 +1,8 @@
-/* eslint @stylistic/js/nonblock-statement-body-position: ["error", "below"] */
-import { RoomDbObject, RoomResolvers, MessageDbObject } from '../types';
-import { GraphQLError } from 'graphql';
-import fs from 'fs';
-import message from '../../models/message';
+import { RoomDbObject, RoomResolvers } from '../types';
 import { ObjectId } from 'mongodb';
 
 const Room: RoomResolvers = {
   messages: async (parent: RoomDbObject, _args, context) => {
-    // Check if the parent room object is valid
-    if (!parent || !parent._id) {
-      throw new GraphQLError('Invalid parent room object provided.');
-    }
-    parent && console.log(parent);
     // Get the messages for the parent room
     const roomMessages: ObjectId[] | undefined =
       parent.messages ??

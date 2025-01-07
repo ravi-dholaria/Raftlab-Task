@@ -1,4 +1,4 @@
-import { ApolloServer, BaseContext } from '@apollo/server';
+import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import express from 'express';
@@ -15,7 +15,6 @@ export interface MyContext {
 const app = express();
 
 const httpServer = http.createServer(app);
-connectDB();
 
 const server = new ApolloServer<MyContext>({
   schema,
@@ -23,6 +22,7 @@ const server = new ApolloServer<MyContext>({
 });
 
 void (async () => {
+  await connectDB();
   await server.start();
 
   app.use(
@@ -34,7 +34,7 @@ void (async () => {
       // eslint-disable-next-line @typescript-eslint/require-await
       context: async ({ req }) => ({
         models,
-        userId: req.headers?.authorization || undefined,
+        userId: req.headers.authorization ?? undefined,
       }),
     }),
   );

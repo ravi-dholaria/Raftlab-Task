@@ -8,6 +8,7 @@ import {
 } from '../resolvers/validation';
 import { compare, hash } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
+import config from '../../config';
 
 const Mutation: MutationResolvers = {
   //#region Authentication
@@ -24,7 +25,7 @@ const Mutation: MutationResolvers = {
       });
 
       //create token
-      const token = sign({ userId: user.id }, process.env.JWT_SECRET!);
+      const token = sign({ userId: user._id }, config.JWT_SECRET);
 
       return { user, token };
     } catch (error: unknown) {
@@ -54,7 +55,7 @@ const Mutation: MutationResolvers = {
     if (!isPasswordValid) throw new GraphQLError('Invalid password');
 
     //create token
-    const token = sign({ userId: user._id }, process.env.JWT_SECRET!);
+    const token = sign({ userId: user._id }, config.JWT_SECRET);
     return { user, token };
   },
   //#endregion

@@ -3,8 +3,8 @@ import tseslint from 'typescript-eslint';
 import eslintConfigPrettier from 'eslint-config-prettier';
 
 export default tseslint.config({
-  files: ['./src/**/*.{ts,tsx}'],
-  ignores: ['**/node_modules/**', '**/dist/**'],
+  ignores: ['**/node_modules/**', '**/dist/**', 'codegen.ts', 'src/schema/types.ts'],
+  files: ['**/*.ts'],
   plugins: {
     '@typescript-eslint': tseslint.plugin,
   },
@@ -21,4 +21,10 @@ export default tseslint.config({
     tseslint.configs.stylisticTypeChecked,
     eslintConfigPrettier,
   ],
+  rules: {
+    '@typescript-eslint/no-unused-expressions': [
+      'error',
+      { allowShortCircuit: true, allowTernary: true },
+    ],
+  },
 });
