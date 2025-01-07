@@ -1,5 +1,5 @@
-import { GraphQLResolveInfo } from 'graphql';
-import { MyContext } from '../server';
+import type { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
+import type { MyContext } from '../server';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -19,12 +19,13 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean };
   Int: { input: number; output: number };
   Float: { input: number; output: number };
+  DateTime: { input: any; output: any };
 };
 
 export type AuthPayload = {
   __typename?: 'AuthPayload';
   token?: Maybe<Scalars['String']['output']>;
-  user?: Maybe<User>;
+  userId?: Maybe<Scalars['String']['output']>;
 };
 
 export type InputUser = {
@@ -35,8 +36,8 @@ export type InputUser = {
 
 export type Message = {
   __typename?: 'Message';
-  createdAt: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
+  _id: Scalars['ID']['output'];
+  createdAt: Scalars['DateTime']['output'];
   room: Room;
   text: Scalars['String']['output'];
   user: User;
@@ -82,29 +83,18 @@ export type MutationUpdateUserArgs = {
 export type Query = {
   __typename?: 'Query';
   me?: Maybe<User>;
-  messages?: Maybe<Array<Message>>;
-  room: Room;
-  rooms?: Maybe<Array<RoomWithoutMessages>>;
+  messages: Room;
+  rooms?: Maybe<Array<Room>>;
 };
 
 export type QueryMessagesArgs = {
   roomId: Scalars['ID']['input'];
 };
 
-export type QueryRoomArgs = {
-  id: Scalars['ID']['input'];
-};
-
 export type Room = {
   __typename?: 'Room';
-  id: Scalars['ID']['output'];
+  _id: Scalars['ID']['output'];
   messages?: Maybe<Array<Message>>;
-  name: Scalars['String']['output'];
-};
-
-export type RoomWithoutMessages = {
-  __typename?: 'RoomWithoutMessages';
-  id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
 };
 
@@ -119,10 +109,37 @@ export type SubscriptionMessageSentArgs = {
 
 export type User = {
   __typename?: 'User';
+  _id: Scalars['ID']['output'];
   email: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   password: Scalars['String']['output'];
+};
+
+export type AdditionalEntityFields = {
+  path?: InputMaybe<Scalars['String']['input']>;
+  type?: InputMaybe<Scalars['String']['input']>;
+};
+
+import { ObjectId } from 'mongodb';
+export type MessageDbObject = {
+  _id: ObjectId;
+  createdAt: any;
+  room: RoomDbObject['_id'];
+  text: string;
+  user: UserDbObject['_id'];
+};
+
+export type RoomDbObject = {
+  _id: ObjectId;
+  messages?: Maybe<Array<MessageDbObject['_id']>>;
+  name: string;
+};
+
+export type UserDbObject = {
+  _id: ObjectId;
+  email: string;
+  name: string;
+  password: string;
 };
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -210,50 +227,144 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   AuthPayload: ResolverTypeWrapper<AuthPayload>;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
-  ID: ResolverTypeWrapper<Scalars['ID']['output']>;
+  String: ResolverTypeWrapper<Scalars['String']['output']>;
+  DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   InputUser: InputUser;
-  Message: ResolverTypeWrapper<Message>;
+  Message: ResolverTypeWrapper<MessageDbObject>;
+  ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
-  Room: ResolverTypeWrapper<Room>;
-  RoomWithoutMessages: ResolverTypeWrapper<RoomWithoutMessages>;
-  String: ResolverTypeWrapper<Scalars['String']['output']>;
+  Room: ResolverTypeWrapper<RoomDbObject>;
   Subscription: ResolverTypeWrapper<{}>;
-  User: ResolverTypeWrapper<User>;
+  User: ResolverTypeWrapper<UserDbObject>;
+  AdditionalEntityFields: AdditionalEntityFields;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   AuthPayload: AuthPayload;
-  Boolean: Scalars['Boolean']['output'];
-  ID: Scalars['ID']['output'];
+  String: Scalars['String']['output'];
+  DateTime: Scalars['DateTime']['output'];
   InputUser: InputUser;
-  Message: Message;
+  Message: MessageDbObject;
+  ID: Scalars['ID']['output'];
   Mutation: {};
   Query: {};
-  Room: Room;
-  RoomWithoutMessages: RoomWithoutMessages;
-  String: Scalars['String']['output'];
+  Room: RoomDbObject;
   Subscription: {};
-  User: User;
+  User: UserDbObject;
+  AdditionalEntityFields: AdditionalEntityFields;
+  Boolean: Scalars['Boolean']['output'];
 };
+
+export type UnionDirectiveArgs = {
+  discriminatorField?: Maybe<Scalars['String']['input']>;
+  additionalFields?: Maybe<Array<Maybe<AdditionalEntityFields>>>;
+};
+
+export type UnionDirectiveResolver<
+  Result,
+  Parent,
+  ContextType = MyContext,
+  Args = UnionDirectiveArgs,
+> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type AbstractEntityDirectiveArgs = {
+  discriminatorField: Scalars['String']['input'];
+  additionalFields?: Maybe<Array<Maybe<AdditionalEntityFields>>>;
+};
+
+export type AbstractEntityDirectiveResolver<
+  Result,
+  Parent,
+  ContextType = MyContext,
+  Args = AbstractEntityDirectiveArgs,
+> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type EntityDirectiveArgs = {
+  embedded?: Maybe<Scalars['Boolean']['input']>;
+  additionalFields?: Maybe<Array<Maybe<AdditionalEntityFields>>>;
+};
+
+export type EntityDirectiveResolver<
+  Result,
+  Parent,
+  ContextType = MyContext,
+  Args = EntityDirectiveArgs,
+> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type ColumnDirectiveArgs = {
+  overrideType?: Maybe<Scalars['String']['input']>;
+};
+
+export type ColumnDirectiveResolver<
+  Result,
+  Parent,
+  ContextType = MyContext,
+  Args = ColumnDirectiveArgs,
+> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type IdDirectiveArgs = {};
+
+export type IdDirectiveResolver<
+  Result,
+  Parent,
+  ContextType = MyContext,
+  Args = IdDirectiveArgs,
+> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type LinkDirectiveArgs = {
+  overrideType?: Maybe<Scalars['String']['input']>;
+};
+
+export type LinkDirectiveResolver<
+  Result,
+  Parent,
+  ContextType = MyContext,
+  Args = LinkDirectiveArgs,
+> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type EmbeddedDirectiveArgs = {};
+
+export type EmbeddedDirectiveResolver<
+  Result,
+  Parent,
+  ContextType = MyContext,
+  Args = EmbeddedDirectiveArgs,
+> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type MapDirectiveArgs = {
+  path: Scalars['String']['input'];
+};
+
+export type MapDirectiveResolver<
+  Result,
+  Parent,
+  ContextType = MyContext,
+  Args = MapDirectiveArgs,
+> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type AuthPayloadResolvers<
   ContextType = MyContext,
   ParentType extends ResolversParentTypes['AuthPayload'] = ResolversParentTypes['AuthPayload'],
 > = {
   token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  userId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
+
+export interface DateTimeScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
+  name: 'DateTime';
+}
 
 export type MessageResolvers<
   ContextType = MyContext,
   ParentType extends ResolversParentTypes['Message'] = ResolversParentTypes['Message'],
 > = {
-  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  _id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   room?: Resolver<ResolversTypes['Room'], ParentType, ContextType>;
   text?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
@@ -309,36 +420,20 @@ export type QueryResolvers<
 > = {
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   messages?: Resolver<
-    Maybe<Array<ResolversTypes['Message']>>,
+    ResolversTypes['Room'],
     ParentType,
     ContextType,
     RequireFields<QueryMessagesArgs, 'roomId'>
   >;
-  room?: Resolver<
-    ResolversTypes['Room'],
-    ParentType,
-    ContextType,
-    RequireFields<QueryRoomArgs, 'id'>
-  >;
-  rooms?: Resolver<Maybe<Array<ResolversTypes['RoomWithoutMessages']>>, ParentType, ContextType>;
+  rooms?: Resolver<Maybe<Array<ResolversTypes['Room']>>, ParentType, ContextType>;
 };
 
 export type RoomResolvers<
   ContextType = MyContext,
   ParentType extends ResolversParentTypes['Room'] = ResolversParentTypes['Room'],
 > = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  _id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   messages?: Resolver<Maybe<Array<ResolversTypes['Message']>>, ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type RoomWithoutMessagesResolvers<
-  ContextType = MyContext,
-  ParentType extends
-    ResolversParentTypes['RoomWithoutMessages'] = ResolversParentTypes['RoomWithoutMessages'],
-> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -360,8 +455,8 @@ export type UserResolvers<
   ContextType = MyContext,
   ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User'],
 > = {
+  _id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   password?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -369,11 +464,22 @@ export type UserResolvers<
 
 export type Resolvers<ContextType = MyContext> = {
   AuthPayload?: AuthPayloadResolvers<ContextType>;
+  DateTime?: GraphQLScalarType;
   Message?: MessageResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Room?: RoomResolvers<ContextType>;
-  RoomWithoutMessages?: RoomWithoutMessagesResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
+};
+
+export type DirectiveResolvers<ContextType = MyContext> = {
+  union?: UnionDirectiveResolver<any, any, ContextType>;
+  abstractEntity?: AbstractEntityDirectiveResolver<any, any, ContextType>;
+  entity?: EntityDirectiveResolver<any, any, ContextType>;
+  column?: ColumnDirectiveResolver<any, any, ContextType>;
+  id?: IdDirectiveResolver<any, any, ContextType>;
+  link?: LinkDirectiveResolver<any, any, ContextType>;
+  embedded?: EmbeddedDirectiveResolver<any, any, ContextType>;
+  map?: MapDirectiveResolver<any, any, ContextType>;
 };

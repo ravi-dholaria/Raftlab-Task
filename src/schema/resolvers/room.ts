@@ -1,20 +1,26 @@
-import { RoomResolvers } from '../types';
-import convertToPlainObject from './utility';
+import { RoomDbObject, RoomResolvers, MessageDbObject } from '../types';
+import { GraphQLError } from 'graphql';
+import fs from 'fs';
+import message from '../../models/message';
+import { ObjectId } from 'mongodb';
 
 const Room: RoomResolvers = {
-  id: (parent) => parent.id.toString(),
-  name: (parent) => parent.name,
-  messages: async (parent, args, context) => {
-    const messages = await context.models.message.find({ room: parent.id }).lean();
-    return messages.map(async (message) => {
-        return {
-            id: message._id.toString(),
-            text: message.text,
-            createdAt: message.createdAt.toString(),
-            user: convertToPlainObject(await context.models.user.findById(message.user).lean()),
-            room: parent,
-      };
-    });
+  messages: async (parent: RoomDbObject, _args, context) => {
+    if (!parent || !parent._id) {
+      throw new GraphQLError('Invalid parent room object provided.');
+    }
+
+    const roomMessages : ObjectId[] | undefined = parent.messages ?? (await context.models.room
+      .findById(parent._id, { messages: 1 })
+      .lean())?.messages;
+
+    if (!roomMessages) {
+      return [];
+    }
+
+    return await context.models.message
+      .find({ _id: { $in: roomMessages } })
+      .lean();
   },
 };
 

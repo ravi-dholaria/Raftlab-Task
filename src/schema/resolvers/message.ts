@@ -1,22 +1,21 @@
 import { GraphQLError } from 'graphql';
-import { MessageResolvers } from '../types';
-import convertToPlainObject from './utility';
+import { MessageResolvers, RoomDbObject, UserDbObject } from '../types';
 
 const Message: MessageResolvers = {
+  
   room: async (parent, args, context) => {
-    const room = await context.models.room.findById(parent.room).lean();
+    const room: RoomDbObject | null = await context.models.room.findById(parent.room).lean();
     if (!room) {
       throw new GraphQLError('Room not found');
     }
-    return {
-      id: room._id.toString(),
-      name: room.name,
-      messages: null,
-    };
+    return room;
   },
   user: async (parent, args, context) => {
-    const user = await context.models.user.findById(parent.user).lean();
-    return convertToPlainObject(user);
+    const user: UserDbObject | null = await context.models.user.findById(parent.user).lean();
+    if (!user) {
+      throw new GraphQLError('User not found');
+    }
+    return user;
   },
 };
 

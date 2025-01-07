@@ -26,15 +26,7 @@ const Mutation: MutationResolvers = {
       //create token
       const token = sign({ userId: user.id }, process.env.JWT_SECRET!);
 
-      return {
-        user: {
-          id: user._id.toString(),
-          email: user.email,
-          name: user.name,
-          password: user.password,
-        },
-        token,
-      };
+      return { user, token };
     } catch (error: unknown) {
       throw new GraphQLError(
         error instanceof Error ? error.message : 'An error occurred while registering the user',
@@ -55,31 +47,23 @@ const Mutation: MutationResolvers = {
     });
 
     //check if user exists
-    if (!user) {
-      throw new GraphQLError('User not found');
-    }
+    if (!user) throw new GraphQLError('User not found');
 
     //compare password
     const isPasswordValid = await compare(password, user.password);
-    if (!isPasswordValid) {
-      throw new GraphQLError('Invalid password');
-    }
+    if (!isPasswordValid) throw new GraphQLError('Invalid password');
 
     //create token
-    const token = sign({ userId: user.id }, process.env.JWT_SECRET!);
-    return {
-      user,
-      token,
-    };
+    const token = sign({ userId: user._id }, process.env.JWT_SECRET!);
+    return { user, token };
   },
   //#endregion
 
   //#region Profile Management
   updateUser: async (parent, args, context) => {
     //check if user is authenticated
-    if (!context.userId) {
-      throw new GraphQLError('User not authenticated');
-    }
+    if (!context.userId) throw new GraphQLError('User not authenticated');
+
     //validate inputs
     validateUpdateUser(args.input);
     if (args.input.password) {
@@ -91,32 +75,20 @@ const Mutation: MutationResolvers = {
     const updatedUser = await context.models.user
       .findByIdAndUpdate(context.userId, args.input, { new: true })
       .lean();
-    if (!updatedUser) {
-      throw new GraphQLError('Something went wrong while updating the user');
-    }
-    return {
-      id: updatedUser._id.toString(),
-      email: updatedUser.email,
-      name: updatedUser.name,
-      password: updatedUser.password,
-    };
+    if (!updatedUser) throw new GraphQLError('Something went wrong while updating the user');
+
+    return updatedUser;
   },
-  deleteUser: async (parent, args, context) => {
+
+  deleteUser: async (_, __, context) => {
     //check if user is authenticated
-    if (!context.userId) {
-      throw new GraphQLError('User not authenticated');
-    }
+    if (!context.userId) throw new GraphQLError('User not authenticated');
+
     //delete user
     const deletedUser = await context.models.user.findByIdAndDelete(context.userId).lean();
-    if (!deletedUser) {
-      throw new GraphQLError('Something went wrong while deleting the user');
-    }
-    return {
-      id: deletedUser._id.toString(),
-      email: deletedUser.email,
-      name: deletedUser.name,
-      password: deletedUser.password,
-    };
+    if (!deletedUser) throw new GraphQLError('Something went wrong while deleting the user');
+
+    return deletedUser;
   },
   //#endregion
 };

@@ -1,37 +1,36 @@
-import { GraphQLError } from 'graphql';
-import { Types } from 'mongoose';
+import { GraphQLScalarType, Kind } from 'graphql';
 
-type Transformer<T> = (
-  doc: Omit<T, '_id' | '__v'> & { id: string },
-) => Omit<T, '_id' | '__v'> & { id: string };
-
-/**
- * Converts a MongoDB document to a plain object, mapping _id to id and excluding
- * the __v field. If a transformer function is provided, it will be applied to
- * the plain object before returning it.
- *
- * @param {T | null} doc The MongoDB document to convert
- * @param {Transformer<T> | undefined} transformer An optional function to apply
- *   to the plain object before returning it
- *
- * @throws {GraphQLError} If the document is null
- *
- * @returns {Omit<T, '_id' | '__v'> & { id: string }}
- */
-export default function convertToPlainObject<T extends { _id: Types.ObjectId; __v: number }>(
-  doc: T | null,
-  transformer?: Transformer<T>,
-): Omit<T, '_id' | '__v'> & { id: string } {
-  if (!doc) throw new GraphQLError("Document doesn't exist");
-
-  // Create a new object and map _id to id and exclude __v
-  const { _id, __v, ...rest } = doc;
-  const plainObject = { id: _id.toString(), ...rest };
-
-  // Apply the transformer function if provided
-  if (transformer) {
-    return transformer(plainObject);
-  }
-
-  return plainObject;
-}
+export const DateTime = new GraphQLScalarType({
+  name: 'DateTime',
+  description: 'A valid DateTime value compatible with MongoDB Date',
+  serialize(value) {
+    // Convert MongoDB Date to ISO string
+    if (!(value instanceof Date)) {
+      throw new Error('DateTime must be a Date object');
+    }
+    return value.toISOString();
+  },
+  parseValue(value) {
+    // Parse input from the client
+    //check if value is string | number | Date
+    if (typeof value === 'string' || typeof value === 'number') {
+      const date = new Date(value);
+      if (isNaN(date.getTime())) {
+        throw new Error('Invalid DateTime format');
+      }
+      return date; // Return a valid Date object
+    }
+    console.error('value is not string | number | Date');
+    return new Date();
+  },
+  parseLiteral(ast) {
+    if (ast.kind === Kind.STRING) {
+      const date = new Date(ast.value);
+      if (isNaN(date.getTime())) {
+        throw new Error('Invalid DateTime format');
+      }
+      return date; // Return a valid Date object
+    }
+    throw new Error('DateTime must be a valid ISO 8601 string');
+  },
+});

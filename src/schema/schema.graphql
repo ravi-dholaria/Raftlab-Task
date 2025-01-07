@@ -1,17 +1,10 @@
-DIRECTIVES
 type Query {
   # User queries
   me: User
 
   # Room queries
-  rooms: [RoomWithoutMessages!]
-  room(id: ID!): Room!
-  messages(roomId: ID!): [Message!]
-}
-
-type RoomWithoutMessages {
-  id: ID!
-  name: String!
+  rooms: [Room!]
+  messages(roomId: ID!): Room!
 }
 
 type Mutation {
@@ -43,27 +36,28 @@ input InputUser {
 
 type AuthPayload {
   token: String
-  user: User
+  userId: String
 }
 
-type User {
-  id: ID!
-  name: String!
-  email: String!
-  password: String!
+type User @entity {
+  _id: ID! @id
+  name: String! @column
+  email: String! @column
+  password: String! @column
 }
 
-type Room {
-  id: ID!
-  name: String!
-  messages: [Message!]
+type Room @entity {
+  _id: ID! @id
+  name: String! @column
+  messages: [Message!] @link
 }
+scalar DateTime
 
-type Message {
-  id: ID!
-  text: String!
-  user: User!
-  room: Room!
+type Message @entity {
+  _id: ID! @id
+  text: String! @column
+  user: User! @link
+  room: Room! @link
 
-  createdAt: String!
+  createdAt: DateTime! @column
 }

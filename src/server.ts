@@ -4,11 +4,9 @@ import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHt
 import express from 'express';
 import http from 'http';
 import cors from 'cors';
-import resolvers from './schema/resolvers';
-import typeDefs from './schema/typeDefs';
+import schema from './schema/typeDefs';
 import connectDB from './db';
 import models, { Imodels } from './models/index';
-
 export interface MyContext {
   models: Imodels;
   userId?: string;
@@ -20,8 +18,7 @@ const httpServer = http.createServer(app);
 connectDB();
 
 const server = new ApolloServer<MyContext>({
-  typeDefs,
-  resolvers,
+  schema,
   plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
 });
 
