@@ -6,7 +6,7 @@ const config: CodegenConfig = {
     './src/schema/types.ts': {
       plugins: ['typescript', 'typescript-mongodb', 'typescript-resolvers'],
       config: {
-        contextType: '../server#MyContext',
+        contextType: '../context#MyContext',
         objectIdType: 'ObjectId#mongodb',
         idFieldName: '_id', // Customize ObjectId type
         useTypeImports: true,

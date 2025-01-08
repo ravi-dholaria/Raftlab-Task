@@ -1,6 +1,11 @@
 import { MutationResolvers, User } from '../../schema/types';
 import { GraphQLError } from 'graphql';
-import { isString, validateEmail, validateInputUser, validateUpdateUser } from '../helper/validation';
+import {
+  isString,
+  validateEmail,
+  validateInputUser,
+  validateUpdateUser,
+} from '../helper/validation';
 import { compare, hash } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import config from '../../config';
@@ -22,7 +27,10 @@ const Mutation: MutationResolvers = {
       //create token
       const token = sign({ userId: user._id }, config.JWT_SECRET);
 
-      return { user, token };
+      return {
+        userId: user._id.toString(),
+        token,
+      };
     } catch (error: unknown) {
       throw new GraphQLError(
         error instanceof Error ? error.message : 'An error occurred while registering the user',
@@ -51,7 +59,7 @@ const Mutation: MutationResolvers = {
 
     //create token
     const token = sign({ userId: user._id }, config.JWT_SECRET);
-    return { user, token };
+    return { userId: user._id.toString(), token };
   },
   //#endregion
 
