@@ -95,6 +95,45 @@ const Mutation: MutationResolvers = {
     return deletedUser;
   },
   //#endregion
+
+  //#region Room Management
+  createRoom: async (_, { name }, context) => {
+    //check if user is authenticated
+    if (!context.userId) throw new GraphQLError('User not authenticated');
+
+    //create room
+    const room = await context.models.room.create({ name, messages: [] });
+    return room;
+  },
+
+  joinRoom: async (_, { id }, context) => {
+    //check if user is authenticated
+    if (!context.userId) throw new GraphQLError('User not authenticated');
+
+    //join room
+    const room = await context.models.room
+      .findByIdAndUpdate(id, { $push: { users: context.userId } })
+      .lean();
+    if (!room) throw new GraphQLError('Room not found');
+
+    return room;
+  },
+  //#endregion
+
+  //#region Message Management
+  sendMessage: async (_, { text, roomId }, context) => {
+    //check if user is authenticated
+    if (!context.userId) throw new GraphQLError('User not authenticated');
+
+    //send message
+    const message = await context.models.message.create({
+      text,
+      user: context.userId,
+      room: roomId,
+    });
+    return message;
+  },
+  //#endregion
 };
 
 export default Mutation;
