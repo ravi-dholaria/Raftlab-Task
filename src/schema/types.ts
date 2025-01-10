@@ -49,6 +49,7 @@ export type Mutation = {
   createRoom: Room;
   deleteUser: User;
   joinRoom: Room;
+  leaveRoom?: Maybe<Scalars['Boolean']['output']>;
   sendMessage: Message;
   signUp: AuthPayload;
   updateUser: User;
@@ -64,11 +65,15 @@ export type MutationCreateRoomArgs = {
 };
 
 export type MutationJoinRoomArgs = {
-  id: Scalars['ID']['input'];
+  name: Scalars['String']['input'];
+};
+
+export type MutationLeaveRoomArgs = {
+  roomId: Scalars['String']['input'];
 };
 
 export type MutationSendMessageArgs = {
-  roomId: Scalars['ID']['input'];
+  roomId: Scalars['String']['input'];
   text: Scalars['String']['input'];
 };
 
@@ -96,15 +101,6 @@ export type Room = {
   _id: Scalars['ID']['output'];
   messages?: Maybe<Array<Message>>;
   name: Scalars['String']['output'];
-};
-
-export type Subscription = {
-  __typename?: 'Subscription';
-  messageSent: Message;
-};
-
-export type SubscriptionMessageSentArgs = {
-  roomId: Scalars['ID']['input'];
 };
 
 export type User = {
@@ -155,7 +151,7 @@ export type ResolverFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
   args: TArgs,
   context: TContext,
-  info: GraphQLResolveInfo,
+  info?: GraphQLResolveInfo,
 ) => Promise<TResult> | TResult;
 
 export type SubscriptionSubscribeFn<TResult, TParent, TContext, TArgs> = (
@@ -233,12 +229,11 @@ export type ResolversTypes = {
   Message: ResolverTypeWrapper<MessageDbObject>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Query: ResolverTypeWrapper<{}>;
   Room: ResolverTypeWrapper<RoomDbObject>;
-  Subscription: ResolverTypeWrapper<{}>;
   User: ResolverTypeWrapper<UserDbObject>;
   AdditionalEntityFields: AdditionalEntityFields;
-  Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -250,12 +245,11 @@ export type ResolversParentTypes = {
   Message: MessageDbObject;
   ID: Scalars['ID']['output'];
   Mutation: {};
+  Boolean: Scalars['Boolean']['output'];
   Query: {};
   Room: RoomDbObject;
-  Subscription: {};
   User: UserDbObject;
   AdditionalEntityFields: AdditionalEntityFields;
-  Boolean: Scalars['Boolean']['output'];
 };
 
 export type UnionDirectiveArgs = {
@@ -392,7 +386,13 @@ export type MutationResolvers<
     ResolversTypes['Room'],
     ParentType,
     ContextType,
-    RequireFields<MutationJoinRoomArgs, 'id'>
+    RequireFields<MutationJoinRoomArgs, 'name'>
+  >;
+  leaveRoom?: Resolver<
+    Maybe<ResolversTypes['Boolean']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationLeaveRoomArgs, 'roomId'>
   >;
   sendMessage?: Resolver<
     ResolversTypes['Message'],
@@ -438,19 +438,6 @@ export type RoomResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SubscriptionResolvers<
-  ContextType = MyContext,
-  ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription'],
-> = {
-  messageSent?: SubscriptionResolver<
-    ResolversTypes['Message'],
-    'messageSent',
-    ParentType,
-    ContextType,
-    RequireFields<SubscriptionMessageSentArgs, 'roomId'>
-  >;
-};
-
 export type UserResolvers<
   ContextType = MyContext,
   ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User'],
@@ -469,7 +456,6 @@ export type Resolvers<ContextType = MyContext> = {
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Room?: RoomResolvers<ContextType>;
-  Subscription?: SubscriptionResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
 };
 

@@ -18,14 +18,11 @@ type Mutation {
 
   # Room management
   createRoom(name: String!): Room!
-  joinRoom(id: ID!): Room!
+  joinRoom(name: String!): Room!
+  leaveRoom(roomId: String!): Boolean
 
   # Message management
-  sendMessage(roomId: ID!, text: String!): Message!
-}
-
-type Subscription {
-  messageSent(roomId: ID!): Message!
+  sendMessage(roomId: String!, text: String!): Message!
 }
 
 input InputUser {

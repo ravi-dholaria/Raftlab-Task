@@ -106,14 +106,12 @@ const Mutation: MutationResolvers = {
     return room;
   },
 
-  joinRoom: async (_, { id }, context) => {
+  joinRoom: async (_, { name }, context) => {
     //check if user is authenticated
     if (!context.userId) throw new GraphQLError('User not authenticated');
 
     //join room
-    const room = await context.models.room
-      .findByIdAndUpdate(id, { $push: { users: context.userId } })
-      .lean();
+    const room = await context.models.room.findOne({ name }).lean();
     if (!room) throw new GraphQLError('Room not found');
 
     return room;
