@@ -1,102 +1,110 @@
-# Node.Js (Express) with TypeScript and MongoDb
-
-This repository serves as a starter template for building Node.js applications using TypeScript. It includes essential tools and configurations for efficient development, including linting, formatting, and environment management.
+# 🚀 **Raftlab-Task Project Documentation**
 
 ---
 
-## **Table of Contents**
-- [Node.Js (Express) with TypeScript and MongoDb](#nodejs-express-with-typescript-and-mongodb)
-  - [**Table of Contents**](#table-of-contents)
-  - [**Scripts**](#scripts)
-  - [**Dependencies**](#dependencies)
-  - [**Dev Dependencies**](#dev-dependencies)
-  - [**How to Use**](#how-to-use)
-    - [Prerequisites](#prerequisites)
-    - [Steps to Run the Project](#steps-to-run-the-project)
+## 🗂️ **Overview**
+
+The **Raftlab-Task** is a robust **GraphQL API** built using **Node.js** and **TypeScript**. It features **real-time communication** with **Socket.IO**, along with advanced **authentication**, seamless **database interaction**, and thorough **data validation**. The project prioritizes **best practices** like linting, formatting, and type safety for maintainable and scalable code.
 
 ---
 
-## **Scripts**
+## ✨ **Key Features**
 
-The `scripts` section in `package.json` defines various commands for development, testing, building, and production.
-
-| **Script**       | **Command**                                                 | **Description**                                                                                                                             |
-| ---------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `build`          | `tsc`                                                       | Compiles TypeScript files from `src/` to JavaScript in the `dist/` directory using `tsconfig.json`.                                         |
-| `start:prod`     | `node ./dist/server.js`                                     | Runs the compiled JavaScript file for production. Ensure the application is built beforehand using the `build` script.                      |
-| `start:dev`      | `ts-node-dev --exit-child ./src/server.ts`                  | Starts the application in development mode using `ts-node-dev`. Automatically reloads the server when changes are detected in source files. |
-| `lint`           | `eslint . --format stylish --stats`                         | Runs ESLint to analyze the code for errors and enforce coding standards. Uses the `stylish` format for output and displays statistics.      |
-| `lint:fix`       | `eslint . --fix-dry-run`                                    | Runs ESLint and simulates automatic fixes for errors without modifying the files.                                                           |
-| `prettier`       | `prettier --ignore-path .gitignore --write "./src/**/*.+(js\|ts\|json)"`   | Formats all JavaScript, TypeScript, and JSON files in the `src` directory according to Prettier configuration.                 |
-| `prettier:check` | `prettier --ignore-path .gitignore --check "./src/**/*.+(js\|ts\|json)"`   | Checks the formatting of files against Prettier rules without modifying them.                                                  |                                                                                           | json)"` | Checks the formatting of files against Prettier rules without modifying them.                                  |
-| `prettier:fix`   | `prettier --write src`                                      | Automatically fixes formatting issues in the `src` directory using Prettier.                                                                |
+- **🔗 GraphQL API**: Queries, mutations, and real-time subscriptions.
+- **📦 MongoDB Integration**: Managed with **Mongoose**.
+- **🔐 Authentication & Authorization**: Powered by **JWT**.
+- **🛠️ Code Generation**: Automates GraphQL schemas and TypeScript types.
+- **💬 Real-time Communication**: Via **Socket.IO**.
 
 ---
 
-## **Dependencies**
+## 🏗️ **Project Structure**
 
-| **Package**                  | **Version** | **Description**                                                                                                          |
-| ---------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `cors`                       | `^2.8.5`    | Enables Cross-Origin Resource Sharing (CORS) for handling requests from different domains.                               |
-| `dotenv`                     | `^16.4.7`   | Loads environment variables from a `.env` file into `process.env`, allowing secure and dynamic configuration.            |
-| `express`                    | `^4.21.2`   | A fast and lightweight web framework for building APIs and web applications.                                             |
-| `mongoose`                   | `^8.9.3`    | An Object Data Modeling (ODM) library for MongoDB that provides schema-based solutions for managing MongoDB collections. |
-| `template-nodejs-typescript` | `file:`     | A placeholder for the local package reference (not functional).                                                          |
+### 📂 **Root Directory**
+- **`.env`**: Stores environment variables.
+- **`.gitignore`**: Excludes files from version control.
+- **`.prettierrc`**: Config for consistent code formatting.
+- **`client.html`**: HTML for testing or frontend development.
+- **`codegen.ts`**: Configures GraphQL type generation.
+- **`eslint.config.mjs`**: Ensures code quality with ESLint rules.
+- **`package.json`**: Metadata, dependencies, and scripts.
+- **`readme.md`**: Project overview and documentation.
+- **`tsconfig.json`**: TypeScript configuration for compilation.
 
----
+### 📂 **`/src` Directory**
 
-## **Dev Dependencies**
+#### 📁 `config`
+- **`index.ts`**: Manages app-level configuration (e.g., environment variables).
 
-| **Package**              | **Version** | **Description**                                                                                              |
-| ------------------------ | ----------- | ------------------------------------------------------------------------------------------------------------ |
-| `@eslint/js`             | `^9.17.0`   | Provides ESLint configurations and rules for JavaScript projects.                                            |
-| `@types/cors`            | `^2.8.17`   | TypeScript type definitions for the `cors` package, enabling strong typing for CORS configurations.          |
-| `@types/express`         | `^5.0.0`    | TypeScript type definitions for the `express` package, enabling strong typing for routes and middleware.     |
-| `@types/node`            | `^22.10.5`  | TypeScript type definitions for Node.js, providing type safety for Node.js APIs.                             |
-| `eslint`                 | `^9.17.0`   | A linting tool for identifying and fixing problems in JavaScript and TypeScript code.                        |
-| `eslint-config-prettier` | `^9.1.0`    | Disables ESLint rules that conflict with Prettier, ensuring compatibility between the two tools.             |
-| `prettier`               | `^3.4.2`    | A code formatter that enforces consistent code style for JavaScript, TypeScript, and other file types.       |
-| `ts-node-dev`            | `^2.0.0`    | A development tool for running TypeScript code directly without compilation, with support for hot-reloading. |
-| `typescript`             | `^5.7.2`    | A strongly typed superset of JavaScript that compiles to plain JavaScript.                                   |
-| `typescript-eslint`      | `^8.19.0`   | ESLint plugin that provides TypeScript-specific linting rules and functionality.                             |
+#### 📁 `database`
+- **`db.ts`**: Connects to **MongoDB** using **Mongoose**.
 
----
+#### 📁 `models`
+- **`index.ts`**: Centralized model exports.
+- **`message.ts`**: Defines the Message schema.
+- **`room.ts`**: Defines the Chat Room schema.
+- **`user.ts`**: Defines the User schema.
 
-## **How to Use**
+#### 📁 `resolvers`
+- **`helper/`**: Reusable utilities for resolvers.
+- **`individual-resolvers/`**
+  - **`message.ts`**: Message resolver functions.
+  - **`room.ts`**: Room resolver functions.
+  - **`user.ts`**: User resolver functions.
+- **`mutations/mutations.ts`**: Handles data modifications.
+- **`queries/queries.ts`**: Fetches data.
+- **`index.ts`**: Combines all queries and mutations.
 
-### Prerequisites
-- Ensure you have Node.js (v14+) and npm or yarn installed.
-- Install TypeScript globally: `npm install -g typescript`.
+#### 📁 `schema`
+- **`schema.graphql`**: GraphQL types, queries, and mutations.
+- **`typeDefs.ts`**: Exports schema for the server.
+- **`types.ts`**: Auto-generated TypeScript types.
 
-### Steps to Run the Project
-1. Clone the repository:  
-   ```bash
-   git clone <repository-url>
-   cd template-nodejs-typescript
-   ```
-
-2. Install dependencies:  
-   ```bash
-   npm install
-   ```
-
-3. Set up the environment variables in a `.env` file.
-
-4. Run the application in development mode:  
-   ```bash
-   npm run start:dev
-   ```
-
-5. Build the application for production:  
-   ```bash
-   npm run build
-   ```
-
-6. Start the production server:  
-   ```bash
-   npm run start:prod
-   ```
+#### 📁 `src`
+- **`app.ts`**: Initializes Express and middleware.
+- **`auth.ts`**: Authentication and authorization logic.
+- **`context.ts`**: Defines GraphQL context for resolvers.
+- **`server.ts`**: Starts the GraphQL server with **Socket.IO** integration.
+- **`socket.io-server.ts`**: Manages real-time communication.
 
 ---
 
-Feel free to contribute to this template by submitting issues or creating pull requests. 🎉
+## 📚 **Libraries Used**
+
+### **Core Dependencies**
+- **`@apollo/server`**: Hosts the GraphQL API.
+- **`@graphql-codegen/*`**: Generates TypeScript types from GraphQL schemas.
+- **`bcrypt`**: Secure password hashing.
+- **`cors`**: Enables Cross-Origin Resource Sharing.
+- **`dotenv`**: Manages environment variables.
+- **`express`**: Web framework.
+- **`graphql`**: Core GraphQL library.
+- **`jsonwebtoken`**: Implements JWT-based authentication.
+- **`mongoose`**: ODM for MongoDB.
+- **`socket.io`**: Real-time communication.
+
+### **Development Dependencies**
+- **`eslint`**: Enforces coding standards.
+- **`prettier`**: Formats code consistently.
+- **`ts-node-dev`**: Runs TypeScript in development mode.
+- **`typescript`**: Adds static typing.
+
+---
+
+## 🔧 **Scripts**
+Defined in **`package.json`**:
+
+| **Script**   | **Description**                                         |
+| ------------ | ------------------------------------------------------- |
+| `build`      | Compiles TypeScript into JavaScript.                    |
+| `start:prod` | Starts the server in production mode.                   |
+| `start:dev`  | Runs the server in development mode with hot-reloading. |
+| `lint`       | Checks code quality with ESLint.                        |
+| `lint:fix`   | Fixes linting issues automatically.                     |
+| `prettier`   | Formats code with Prettier.                             |
+| `codegen`    | Generates GraphQL types and resolvers.                  |
+
+---
+
+## 🎉 **Happy Coding!**
+📖 **Contact**: For more details, reach out to [ME](ravidholariya620@gmail.com).
